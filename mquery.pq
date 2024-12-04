@@ -2,9 +2,9 @@
 
 let 
 Source=Table.AddColumn(),
-Newtable=Table.Records(Table.TransformRows(
+Newtable=Table.ToRecords(Table.TransformRows(
 	Source,
-	Each _&[ColumnName= Expression]
+	each _&[ColumnName= Expression]
 	))
 in 
 @Newtable
