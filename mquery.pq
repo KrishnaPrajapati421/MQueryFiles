@@ -7,4 +7,23 @@ Newtable=Table.ToRecords(Table.TransformRows(
 	each _&[ColumnName= Expression]
 	))
 in 
-@Newtable
+Newtable
+
+
+// Performing append table operation with dynamic column names
+
+let 
+Source=Excel.CurrentWorkbook(),
+ColumnNameList=Table.ColumnNames(Table.Combine(Source[Content])),
+Custom1=Source,
+ExpandTables=Table.ExpandTableColumns(Custom1,"Content",ColumnNameList)
+in 
+ExpandTables
+
+// Dynamic Unpivoting 
+
+let 
+Source=Excel.CurrentWorkbook(),
+ColumnNameList=Table.ColumnNames(Source),
+ConvertTotable=Table.FromList(ColumnNameList,Splitter.SplitByNothing(),null,null,ExtraValues.Ignore)// For Converting List to table
+
