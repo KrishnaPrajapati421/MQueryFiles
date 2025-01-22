@@ -1,0 +1,61 @@
+createOrReplace
+
+    table 'Time Intelligence'      
+
+        calculationGroup
+            precedence: 1
+
+            calculationItem YTD =
+                    CALCULATE (
+                        SELECTEDMEASURE (),
+                        DATESYTD ( 'Calendar'[Date] )
+                    )
+
+            calculationItem QTD =
+                    CALCULATE (
+                        SELECTEDMEASURE (),
+                        DATESQTD ( 'Calendar'[Date] )
+                    )
+
+            calculationItem MTD =
+                    CALCULATE (
+                        SELECTEDMEASURE (),
+                        DATESMTD ( 'Calendar'[Date] )
+                    )
+
+            calculationItem Current = SELECTEDMEASURE()
+
+            calculationItem PY =
+                    CALCULATE (
+                        SELECTEDMEASURE (),
+                        SAMEPERIODLASTYEAR ( 'Calendar'[Date] )
+                    )
+
+            calculationItem PYQTD =
+                    CALCULATE (
+                        SELECTEDMEASURE (),
+                        DATESQTD ( SAMEPERIODLASTYEAR ( 'Calendar'[Date] ) )
+                    )
+
+            calculationItem PYMTD =
+                    CALCULATE (
+                        SELECTEDMEASURE (),
+                        DATESMTD ( SAMEPERIODLASTYEAR ( 'Calendar'[Date] ) )
+                    )
+
+            calculationItem PYYTD =
+                    CALCULATE (
+                        SELECTEDMEASURE (),
+                        DATESYTD ( SAMEPERIODLASTYEAR ( 'Calendar'[Date] ) )
+                    )
+
+        column 'Show as'
+            dataType: string                        
+            sourceColumn: Name
+            sortByColumn: Ordinal          
+
+        column Ordinal
+            dataType: int64
+            formatString: 0        
+            summarizeBy: none
+            sourceColumn: Ordinal
