@@ -1,0 +1,63 @@
+createOrReplace
+    function 'XU.TMDL.TextSplit.ColumnCreate' =
+		(
+			ColumnNames      : STRING VAL,
+			SourceTableName  : STRING VAL,
+			ColumnDataType   : STRING VAL,
+			SplitDelimiter   : STRING VAL,   -- e.g. "|~|"
+			PathDelimiter    : STRING VAL    -- e.g. "|"
+		) =>
+
+			VAR LB = UNICHAR(10)
+
+			VAR ColumnItemString =
+				SUBSTITUTE ( COALESCE ( ColumnNames, "" ), ",", "|" )
+
+			VAR ColumnList =
+				SELECTCOLUMNS (
+					ADDCOLUMNS (
+						GENERATESERIES ( 1, PATHLENGTH ( ColumnItemString ), 1 ),
+						"ColumnName",
+							TRIM ( PATHITEM ( ColumnItemString, [Value] ) )
+					),
+					[ColumnName]
+				)
+
+			VAR ScriptStart =
+				"createOrReplace" & LB & LB &
+				"    ref table " & SourceTableName & LB & LB
+
+			VAR ScriptBody =
+				CONCATENATEX (
+					ColumnList,
+					"        column " & [ColumnName] & "_From =" & LB &
+					"                PATHITEM(" & LB &
+					"                    SUBSTITUTE(" &
+										SourceTableName & "[" & [ColumnName] & "], " &
+										"""" & SplitDelimiter & """, " &
+										"""" & PathDelimiter & """" &
+					")," & LB &
+					"                    1," & LB &
+					"                    TEXT" & LB &
+					"                )" & LB &
+					"            dataType: " & ColumnDataType & LB &
+					"            summarizeBy: none" & LB & LB &
+
+					"        column " & [ColumnName] & "_To =" & LB &
+					"                PATHITEM(" & LB &
+					"                    SUBSTITUTE(" &
+										SourceTableName & "[" & [ColumnName] & "], " &
+										"""" & SplitDelimiter & """, " &
+										"""" & PathDelimiter & """" &
+					")," & LB &
+					"                    2," & LB &
+					"                    TEXT" & LB &
+					"                )" & LB &
+					"            dataType: " & ColumnDataType & LB &
+					"            summarizeBy: none",
+
+					LB & LB
+				)
+
+			RETURN
+				ScriptStart & ScriptBody
